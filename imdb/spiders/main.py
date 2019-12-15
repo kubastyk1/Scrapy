@@ -1,7 +1,9 @@
 import scrapy
 import re
+import json
 
-actorDict = {}
+actorDict = {};
+jsonData = [];
 
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
@@ -36,8 +38,17 @@ class QuotesSpider(scrapy.Spider):
             tmp = [key, value]
             actorList.append(tmp);
         actorList.sort(key=lambda x: x[1]);
-        f = open("top_actors.txt", "w");
+        jsonf = open('castJson.json', 'w');
+        f = open("full_cast.txt", "w");
         for actor in actorList[::-1]:
-            f.write('{0: <16}'.format(" ".join(actor[0].split())) + " :" + str(actor[1])+'\n')
+            formattedName = '{0: <16}'.format(" ".join(actor[0].split()))
+            f.write(formattedName + " :" + str(actor[1])+'\n')
+            jsonData.append({formattedName: actor[1]})
+        json.dump(jsonData, jsonf);
+        jsonf.close();
         f.close();
+
+
+
+
 # scrapy crawl quotes
