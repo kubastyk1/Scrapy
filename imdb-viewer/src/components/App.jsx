@@ -1,19 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
 import DataView from './DataView/DataView';
+import * as Styled from './App.styled.js';
 
-const Container = styled.div`
-  margin: 1em;
-`
 
 const App = () => {
   return (
-    <Container>
-      <header>
+    <Styled.Container>
+      <Styled.Header>
         <h1>Filmonator</h1>
-      </header>
+      </Styled.Header>
       <DataView/>
-    </Container>
+    </Styled.Container>
   );
 }
 
