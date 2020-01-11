@@ -1,5 +1,4 @@
-import React from 'react'
-import { render } from 'react-dom'
+import React, { memo } from 'react'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 
@@ -9,7 +8,6 @@ const BarChart = ({ labels, data }) => {
         chart: {
             backgroundColor: '#222',
             type: 'bar',
-            
         },
         legend: {
             itemStyle:{'color':'white'}
@@ -63,4 +61,4 @@ const BarChart = ({ labels, data }) => {
     />
 }
 
-export default BarChart;
+export default memo(BarChart);
