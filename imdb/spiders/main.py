@@ -43,18 +43,21 @@ class QuotesSpider(scrapy.Spider):
                     actorDict[actor]["movies"].append(title)
                 else:
                     actorDict[actor]["series"].append(title)
+                actorDict[actor]["size"] = actorDict[actor]["size"]+1
             else:
                 if isMovie:
                     newActor = {
                       "name": actor,
                       "movies": [title],
-                      "series": []
+                      "series": [],
+                      "size": 1
                     }
                 else:
                     newActor = {
                       "name": actor,
                       "movies": [],
-                      "series": [title]
+                      "series": [title],
+                      "size": 1
                     }
                 actorDict[actor] = newActor;
 
@@ -62,7 +65,14 @@ class QuotesSpider(scrapy.Spider):
         global actorDict;
         jsonf = open('castJson.json', 'w');
         jsonf.truncate(0)
-        for actor in actorDict.items():
+
+        actorList = [];
+        for key, value in actorDict.items():
+            tmp = [key, value]
+            actorList.append(tmp);
+        actorList.sort(key=lambda x: x[1]["size"], reverse = True);
+
+        for actor in actorList[:100]:
             jsonData.append(actor[1])
         json.dump(jsonData, jsonf);
         jsonf.close();
