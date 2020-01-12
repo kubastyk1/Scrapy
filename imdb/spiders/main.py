@@ -8,9 +8,13 @@ jsonData = [];
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
 
+    def closed(self, reason):
+        self.generateJSON()
+
     def start_requests(self):
         urls = [
             'https://www.imdb.com/chart/top/?ref_=nv_mv_250',
+            'https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250',
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
@@ -21,34 +25,45 @@ class QuotesSpider(scrapy.Spider):
             if "/title/tt" in link:
                 links.append(link+'fullcredits')
 
-        for href in links:
+        for href in links:  #links[:100]
             yield response.follow(href, self.parse_actors)
 
     def parse_actors(self, response):
-        actorNames = response.xpath('//a[contains(@href,"/name/nm")]/text()').getall()
+        title = response.xpath('//a[contains(@itemprop,"url")]/text()').get()
+        header = response.xpath('//h4[contains(@class,"dataHeaderWithBorder")]/text()').get()
+        actorNames = response.xpath('//table[@class="cast_list"]//a[contains(@href,"/name/nm")]/text()').getall()
+        isMovie = True
+        if "Series" in header:
+            isMovie = False
+
         for actor in actorNames:
             global actorDict;
-            #self.log(actorDict)
             if actor in actorDict:
-                actorDict[actor] += 1;
+                if isMovie:
+                    actorDict[actor]["movies"].append(title)
+                else:
+                    actorDict[actor]["series"].append(title)
             else:
-                actorDict[actor] = 1;
-        actorList = [];
-        for key, value in actorDict.items():
-            tmp = [key, value]
-            actorList.append(tmp);
-        actorList.sort(key=lambda x: x[1]);
+                if isMovie:
+                    newActor = {
+                      "name": actor,
+                      "movies": [title],
+                      "series": []
+                    }
+                else:
+                    newActor = {
+                      "name": actor,
+                      "movies": [],
+                      "series": [title]
+                    }
+                actorDict[actor] = newActor;
+
+    def generateJSON(self):
+        global actorDict;
         jsonf = open('castJson.json', 'w');
-        f = open("full_cast.txt", "w");
-        for actor in actorList[::-1]:
-            formattedName = '{0: <16}'.format(" ".join(actor[0].split()))
-            f.write(formattedName + " :" + str(actor[1])+'\n')
-            jsonData.append({formattedName: actor[1]})
+        jsonf.truncate(0)
+        for actor in actorDict.items():
+            jsonData.append(actor[1])
         json.dump(jsonData, jsonf);
         jsonf.close();
-        f.close();
-
-
-
-
 # scrapy crawl quotes
