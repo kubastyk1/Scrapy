@@ -7,7 +7,7 @@ const BarChart = ({ labels, data }) => {
     const options = {
         chart: {
             backgroundColor: '#222',
-            height: '1000px',
+            height: '2000px',
             type: 'bar',
         },
         legend: {
