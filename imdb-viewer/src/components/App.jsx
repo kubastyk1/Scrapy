@@ -1,6 +1,7 @@
 import React from 'react';
 import DataView from './DataView/DataView';
 import * as Styled from './App.styled.js';
+import data from 'data/cast.json';
 
 const actors = [
   {
@@ -38,12 +39,14 @@ const actors = [
 ]
 
 const App = () => {
+  const actorsFromFile = data.slice(0,100);
+  console.log(actorsFromFile);
   return (
     <Styled.Container>
       <Styled.Header>
         <h1>Filmonator</h1>
       </Styled.Header>
-      <DataView actors={actors}/>
+      <DataView actors={actorsFromFile}/>
     </Styled.Container>
   );
 }
